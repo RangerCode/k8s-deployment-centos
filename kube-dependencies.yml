@@ -2,6 +2,11 @@
   become: yes
   tasks:
    
+   - name: upgrade all packages
+     yum:
+       name: '*'
+       state: latest
+
    - name: install Docker
      yum:
        name: docker
@@ -12,7 +17,21 @@
      service:
        name: docker
        state: started
-   
+    
+   - name: enable Docker
+     service:
+       name: docker
+       enabled: yes
+
+   - name: disable swap
+     shell: swappoff -a
+
+   - name: disable swap permanently
+     replace:
+       path: /etc/fstab
+       regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+       replace: '# \1'
+
    - name: disable SELinux
      command: setenforce 0
  
