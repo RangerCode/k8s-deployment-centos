@@ -24,7 +24,7 @@
        enabled: yes
 
    - name: disable swap
-     shell: swappoff -a
+     shell: swapoff -a
 
    - name: disable swap permanently
      replace:
@@ -76,7 +76,7 @@
        enabled: yes
        state: started
 
-- hosts: master
+- hosts: masters
   become: yes
   tasks:
    
