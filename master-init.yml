@@ -1,13 +1,21 @@
 - hosts: masters
   become: yes
   tasks:
-    
+
+    - name: stop firewall
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+      tags: [ 'system', 'firewall']
+
     - name: initialize the cluster
       shell: kubeadm init --pod-network-cidr=10.244.0.0/16 >> cluster_initialized.txt
       args:
         chdir: $HOME
         creates: cluster_initialized.txt
-    
+      tags: [ 'config' ]
+
     - name: create .kube directory
       become: yes
       become_user: root
@@ -15,6 +23,7 @@
         path: $HOME/.kube
         state: directory
         mode: 0755
+      tags: [ 'config' ]
 
     - name: copy admin.conf to user's kube config
       copy:
@@ -22,7 +31,8 @@
         dest: $HOME/.kube/config
         remote_src: yes
         owner: root
-    
+      tags: [ 'config' ]
+
     - name: install Pod network
       become: yes
       become_user: root
@@ -30,3 +40,4 @@
       args:
         chdir: $HOME
         creates: pod_network_setup.txt
+      tags: [ 'config' ]

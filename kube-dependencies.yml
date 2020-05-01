@@ -1,56 +1,66 @@
 - hosts: all
   become: yes
   tasks:
-   
+
    - name: upgrade all packages
      yum:
        name: '*'
        state: latest
+     tags: [ 'package' ]
 
    - name: install Docker
      yum:
        name: docker
        state: present
        update_cache: true
-   
+     tags: [ 'package' ]
+
    - name: start Docker
      service:
        name: docker
        state: started
-    
+     tags: [ 'service' ]
+
    - name: enable Docker
      service:
        name: docker
        enabled: yes
+     tags: [ 'service' ]
 
    - name: disable swap
      shell: swapoff -a
+     tags: [ 'system' ]
 
    - name: disable swap permanently
      replace:
        path: /etc/fstab
        regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
        replace: '# \1'
+     tags: [ 'system' ]
 
    - name: disable SELinux
      command: setenforce 0
- 
+     tags: [ 'system' ]
+
    - name: disable SELinux on reboot
      selinux:
        state: disabled
- 
+     tags: [ 'system' ]
+
    - name: ensure net.bridge.bridge-nf-call-ip6tables is set to 1
      sysctl:
       name: net.bridge.bridge-nf-call-ip6tables
       value: 1
       state: present
- 
+     tags: [ 'system' ]
+
    - name: ensure net.bridge.bridge-nf-call-iptables is set to 1
      sysctl:
       name: net.bridge.bridge-nf-call-iptables
       value: 1
       state: present
-  
+     tags: [ 'system' ]
+
    - name: add Kubernetes' YUM repository
      yum_repository:
       name: Kubernetes
@@ -58,30 +68,35 @@
       baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
       gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
       gpgcheck: yes
-  
+     tags: [ 'packages' ]
+
    - name: install kubelet
      yum:
         name: kubelet-1.14.0
         state: present
         update_cache: true
- 
+     tags: [ 'packages' ]
+
    - name: install kubeadm
      yum:
         name: kubeadm-1.14.0
         state: present
- 
+     tags: [ 'packages' ]
+
    - name: start kubelet
      service:
        name: kubelet
        enabled: yes
        state: started
+     tags: [ 'service' ]
 
 - hosts: masters
   become: yes
   tasks:
-   
+
    - name: install kubectl
      yum:
         name: kubectl-1.14.0
         state: present
         allow_downgrade: yes
+     tags: [ 'packages' ]
