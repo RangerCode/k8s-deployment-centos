@@ -2,12 +2,6 @@
   become: yes
   tasks:
 
-   - name: upgrade all packages
-     yum:
-       name: '*'
-       state: latest
-     tags: [ 'package' ]
-
    - name: install Docker
      yum:
        name: docker
