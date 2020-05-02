@@ -1,3 +1,7 @@
+[kubernetes:children]
+masters
+workers
+
 [masters]
 master1 ansible_host=<master1-ip> ansible_user=root ansible_ssh_private_key_file=<ssh-private-key-file>
 
