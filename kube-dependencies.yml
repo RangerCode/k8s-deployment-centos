@@ -23,14 +23,14 @@
 
    - name: disable swap
      shell: swapoff -a
-     tags: [ 'system' ]
+     tags: [ 'system', 'swap' ]
 
    - name: disable swap permanently
      replace:
        path: /etc/fstab
-       regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
-       replace: '# \1'
-     tags: [ 'system' ]
+       regexp: '^(\s*)([^#\n]+\s+)(\w+\s+)swap(\s+.*)$'
+       replace: '#\1\2\3swap\4'
+     tags: [ 'system', 'swap' ]
 
    - name: disable SELinux
      command: setenforce 0
